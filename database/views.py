@@ -1,7 +1,6 @@
-from database.models import AsyncSessionLocal, User, Channel
+from database.models import AsyncSessionLocal, User, Channel, BlackList
 from sqlalchemy.future import select
 from sqlalchemy import delete
-from utils.support import check_channel_exists
 
 
 async def add_user(user_id: int, username: str):
@@ -13,8 +12,8 @@ async def add_user(user_id: int, username: str):
             await db.commit()
             await db.refresh(db_user)
             return db_user
-        except Exception as e:
-            print("the user exist")
+        except Exception as error:
+            print(f"Exception: {error}\nType: {type(error)}")
 
 
 async def add_channels(user_id: int, source_channel: str, recipient_channel: str, key_word: str):
@@ -31,24 +30,6 @@ async def add_channels(user_id: int, source_channel: str, recipient_channel: str
             await db.refresh(db_channel)
 
 
-async def get_all_channels(user_id: int):
-    """Получить все каналы для стартового сообщения"""
-    async with AsyncSessionLocal() as db:
-        source = select(Channel.source_channel).where(Channel.user_id == user_id)
-        recipient = select(Channel.recipient_channel).where(Channel.user_id == user_id)
-        key_words = select(Channel.key_word).where(Channel.user_id == user_id)
-        result1 = await db.execute(source)
-        result2 = await db.execute(recipient)
-        result3 = await db.execute(key_words)
-        channels1 = result1.scalars().all()
-        channels2 = result2.scalars().all()
-        channels3 = result3.scalars().all()
-
-        return f"Список каналов:\n" + "\n".join(
-            f"____\nИсточник - {x}\nПолучатель - {y}\nКлючевое слово - {w}" for x, y, w in
-            zip(channels1, channels2, channels3))
-
-
 async def delete_channels(source: str):
     """Delete couple"""
     async with AsyncSessionLocal() as db:
@@ -58,15 +39,47 @@ async def delete_channels(source: str):
 
 
 async def all_couples(user_id: int):
-    """Все пары для transfer"""
+    """Get all couples"""
     async with AsyncSessionLocal() as db:
-        source = select(Channel.source_channel).where(Channel.user_id == user_id)
-        recipient = select(Channel.recipient_channel).where(Channel.user_id == user_id)
-        key_words = select(Channel.key_word).where(Channel.user_id == user_id)
-        result1 = await db.execute(source)
-        result2 = await db.execute(recipient)
-        result3 = await db.execute(key_words)
-        channels1 = result1.scalars().all()
-        channels2 = result2.scalars().all()
-        key_word = result3.scalars().all()
-        return [[s, r, w] for s, r, w in zip(channels1, channels2, key_word)]
+        try:
+            source = select(Channel.source_channel).where(Channel.user_id == user_id)
+            recipient = select(Channel.recipient_channel).where(Channel.user_id == user_id)
+            key_words = select(Channel.key_word).where(Channel.user_id == user_id)
+            result1 = await db.execute(source)
+            result2 = await db.execute(recipient)
+            result3 = await db.execute(key_words)
+            channels1 = result1.scalars().all()
+            channels2 = result2.scalars().all()
+            key_word = result3.scalars().all()
+            return [[s, r, w] for s, r, w in zip(channels1, channels2, key_word)]
+        except Exception as error:
+            print(f"Exception: {error}\nType: {type(error)}")
+
+
+async def add_black_words(user_id: int, black_word: str):
+    async with AsyncSessionLocal() as db:
+        try:
+            black_word = BlackList(user_id=user_id, black_word=black_word)
+            db.add(black_word)
+            await db.commit()
+            await db.refresh(black_word)
+        except Exception as error:
+            print(f"Exception: {error}\nType: {type(error)}")
+
+
+async def get_black_list(user_id: int):
+    async with AsyncSessionLocal() as db:
+        try:
+            black_list_words = select(BlackList.black_word).where(BlackList.user_id == user_id)
+            result = await db.execute(black_list_words)
+            channels1 = result.scalars().all()
+            return [word for word in channels1]
+        except Exception as error:
+            print(f"Exception: {error}\nType: {type(error)}")
+
+
+async def delete_black_word_view(word: str):
+    async with AsyncSessionLocal() as db:
+        rec = delete(BlackList).where(BlackList.black_word == word)
+        await db.execute(rec)
+        await db.commit()

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ARRAY
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -7,7 +7,8 @@ from config import DATABASE_URL
 engine = create_async_engine(DATABASE_URL)
 AsyncSessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False)
 
-"""Фабрика сессий для взаимодействия с БД
+"""
+Фабрика сессий для взаимодействия с БД
 async_sessionmaker: Это фабрика для создания объектов асинхронных сессий, которые обеспечивают взаимодействие
 с базой данных. bind=engine: Связывает сессию с определённым движком (engine), который определяет
 подключение к базе данных. engine управляет всеми низкоуровневыми операциями подключения к базе данных.
@@ -20,7 +21,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, unique=True, nullable=False)
-    username = Column(String)
+    username = Column(ARRAY(String))
 
 
 class Channel(Base):
@@ -35,6 +36,14 @@ class Channel(Base):
     def print_res(self):
         res = [self.source_channel, self.recipient_channel, self.key_word]
         return res
+
+
+class BlackList(Base):
+    __tablename__ = 'blacklist'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, nullable=False)
+    black_word = Column(String, nullable=True)
 
 
 async def init_db():

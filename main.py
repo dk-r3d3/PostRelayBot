@@ -17,7 +17,7 @@ async def main():
 
     dp = Dispatcher()
 
-    dp.include_routers(router_commands, router_channels, router_transfer)  # готово
+    dp.include_routers(router_commands, router_channels, router_transfer)
     await init_db()  # создали таблицы
     await client.start()
     await dp.start_polling(bot)

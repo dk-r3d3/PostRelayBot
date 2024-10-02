@@ -1,13 +1,19 @@
 from aiogram import types
 
 
-def start_keyboard():  ######
+def start_keyboard():
     buttons = [
         [
             types.InlineKeyboardButton(text="Добавить пару источник-получатель", callback_data="add_couple"),
         ],
         [
             types.InlineKeyboardButton(text="Удалить пару источник-получатель", callback_data="delete_couple")
+        ],
+        [
+            types.InlineKeyboardButton(text="Добавить слово в черный список", callback_data="add_word_in_black_list")
+        ],
+        [
+            types.InlineKeyboardButton(text="Удалить слово из черного списка", callback_data="delete_word_in_black_list")
         ],
         [
             types.InlineKeyboardButton(text="Старт", callback_data="start_transfer"),
@@ -18,7 +24,7 @@ def start_keyboard():  ######
     return keyboard
 
 
-def back_key():  ###
+def back_key():
     buttons = [
         [
             types.InlineKeyboardButton(text="Назад", callback_data="back"),
@@ -28,7 +34,7 @@ def back_key():  ###
     return keyboard
 
 
-def add_channel_recipient_keyboard():  ###
+def add_channel_recipient_keyboard():
     buttons = [
         [
             types.InlineKeyboardButton(text="Добавить канал-получатель", callback_data="add_channel_recipient"),
@@ -45,7 +51,7 @@ def add_key_word_keyboard():
             types.InlineKeyboardButton(text="Добавить ключевое слово", callback_data="add_key_word"),
         ],
         [
-            types.InlineKeyboardButton(text="Продолжить без ключевого слова", callback_data="without_a_keyword")
+            types.InlineKeyboardButton(text="Продолжить", callback_data="without_a_keyword")
         ]
     ]
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
