@@ -21,29 +21,28 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, unique=True, nullable=False)
-    username = Column(ARRAY(String))
+    username = Column(String, unique=True, nullable=True)
 
 
-class Channel(Base):
-    __tablename__ = 'channels'
+class Recipient(Base):
+    __tablename__ = "recipient"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, nullable=False)
+    recipient_channel = Column(String, nullable=False)
+
+
+class Source(Base):
+    __tablename__ = 'sources'
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, nullable=False)
     source_channel = Column(String, nullable=False)
-    recipient_channel = Column(String, nullable=False)
     key_word = Column(String, nullable=True)
 
     def print_res(self):
-        res = [self.source_channel, self.recipient_channel, self.key_word]
+        res = [self.source_channel, self.key_word]
         return res
-
-
-class BlackList(Base):
-    __tablename__ = 'blacklist'
-
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, nullable=False)
-    black_word = Column(String, nullable=True)
 
 
 async def init_db():

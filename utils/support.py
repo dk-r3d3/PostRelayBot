@@ -1,4 +1,5 @@
-from database.views import all_couples, get_black_list
+from database.views import all_sources
+from config import bot
 
 
 async def get_channel_id(client, channel_name):
@@ -19,12 +20,14 @@ async def check_channel_exists(client, channel_name):
 
 async def format_channels(user_id):
     """Данная функция предназначена для преобразования списка в строку"""
-    channels = await all_couples(user_id)
-    return ("Список каналов:\n" +
-            "\n".join(f"_____\nИсточник - {x}\nПолучатель - {y}\nКлючевое слово - {w}" for x, y, w in channels))
+    channels = await all_sources(user_id)
+    return (
+        "\n".join(f"_____\nИсточник - {x}\nКлючевое слово - {w}" for x, w in channels))
 
 
-async def format_black_list(user_id):
-    """Данная функция предназначена для преобразования списка в строку"""
-    black_list = await get_black_list(user_id)
-    return f"Черный список слов: {', '.join(str(x) for x in black_list)}"
+async def menu(chat_id, recipient_channel, source_channels, start_keyboard):
+    await bot.send_message(chat_id=chat_id,
+                           text=f'Канал-получатель: {recipient_channel if recipient_channel is not None else ""}\n'
+                                f'Каналы-источники: \n{source_channels}\n',  # добавлять с клоючевыми словами
+                           reply_markup=start_keyboard
+                           )

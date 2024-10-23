@@ -13,4 +13,4 @@ DATABASE_URL = os.getenv('DATABASE_URL')
 
 
 bot = Bot(token=BOT_TOKEN)
-client = TelegramClient('session_from_education', int(API_ID), API_HASH)
+client = TelegramClient('session_education2', int(API_ID), API_HASH)
