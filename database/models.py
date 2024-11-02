@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ARRAY
+from sqlalchemy import Column, Integer, String, BIGINT, BigInteger
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -20,7 +20,7 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, unique=True, nullable=False)
+    user_id = Column(BigInteger, unique=True, nullable=False)
     username = Column(String, unique=True, nullable=True)
 
 
@@ -28,7 +28,7 @@ class Recipient(Base):
     __tablename__ = "recipient"
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, nullable=False)
+    user_id = Column(BigInteger, nullable=False)
     recipient_channel = Column(String, nullable=False)
 
 
@@ -36,7 +36,7 @@ class Source(Base):
     __tablename__ = 'sources'
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, nullable=False)
+    user_id = Column(BigInteger, nullable=False)
     source_channel = Column(String, nullable=False)
     key_word = Column(String, nullable=True)
 
